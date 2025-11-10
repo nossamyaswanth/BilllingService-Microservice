@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: billing-service
+  template:
+    metadata:
+      labels:
+        app: billing-service
+    spec:
+      containers:
+      - name: billing-service
+        image: billing-service:latest   # You will build this image
+        ports:
+        - containerPort: 5075
+        envFrom:
+        - configMapRef:
+            name: billing-config
+        - secretRef:
+            name: billing-secret

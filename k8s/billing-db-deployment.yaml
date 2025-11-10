@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: billing-db
+spec:
+  selector:
+    matchLabels:
+      app: billing-db
+  template:
+    metadata:
+      labels:
+        app: billing-db
+    spec:
+      containers:
+      - name: billing-db
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+        - containerPort: 1433
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
+        - name: SA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: billing-secret
+              key: SA_PASSWORD
+        volumeMounts:
+        - mountPath: /var/opt/mssql
+          name: billing-storage
+      volumes:
+      - name: billing-storage
+        persistentVolumeClaim:
+          claimName: billing-db-pvc
